@@ -11,6 +11,13 @@ int Equal(double number1, double number2)
 
 void SolveEquation(double a, double b, double c, double* Root1, double* Root2, int* ModeOfAnswer)
 {
+    assert(isfinite(a));
+    assert(isfinite(b));
+    assert(isfinite(c));
+    assert(!isnan(a));
+    assert(!isnan(b));
+    assert(!isnan(c));
+
     if (Equal(a, 0))
     {
         *ModeOfAnswer = SolveLinear(b, c, Root1);
@@ -23,24 +30,32 @@ void SolveEquation(double a, double b, double c, double* Root1, double* Root2, i
 
 int SolveLinear(double b, double c, double* Root1)
 {
+    assert(isfinite(b));
+    assert(isfinite(c));
+    assert(!isnan(b));
+    assert(!isnan(c));
+
     if(Equal(b, 0))
     {
         if(Equal(c, 0))
         {
-            return 4;
+            return ANYNUMBER;
         }
         *Root1 = -c;
-        return 2;
+        return ONEROOT;
     }
     else
     {
         *Root1 = -c / b;
-        return 2;
+        return ONEROOT;
     }
 }
 
 int SolveSquare(double a, double b, double c, double* Root1, double* Root2)
 {
+    assert(isfinite(a));
+    assert(isfinite(b));
+    assert(isfinite(c));
     assert(!isnan(a));
     assert(!isnan(b));
     assert(!isnan(c));
@@ -52,29 +67,34 @@ int SolveSquare(double a, double b, double c, double* Root1, double* Root2)
         *Root1 = ( -b + sqrt( discriminant ) ) / ( 2 * a );
         *Root2 = ( -b - sqrt( discriminant ) ) / ( 2 * a );
 
-        return 3;
+        return TWOROOTS;
     }
     if (Equal(discriminant, 0) == 1)
     {
         *Root1 = -b / ( 2 * a );
 
-        return 2;
+        return ONEROOT;
     }
     if (discriminant < 0)
     {
-        return 1;
+        return NOROOTS;
     }
 
-    return 0;
+    return ERROR;
 }
 
 int test(double a, double b, double c, double Root1, double Root2, int ModeOfAnswer)
 {
+    assert(isfinite(a));
+    assert(isfinite(b));
+    assert(isfinite(c));
+    assert(isfinite(Root1));
+    assert(isfinite(Root2));
     assert(!isnan(a));
     assert(!isnan(b));
-    assert(!isnan(a));
+    assert(!isnan(c));
 
-    LevelData Levels[] = {
+    LevelData Tests[] = {
             {0, 0, 0, 0, 0},
             {0, 0, -3, 3, 0},
             {0, 5, 0, 0, 0},
@@ -88,11 +108,11 @@ int test(double a, double b, double c, double Root1, double Root2, int ModeOfAns
 
     for(int i = 0; i < 7; i++)
     {
-        SolveEquation(Levels[i].a, Levels[i].b, Levels[i].c, &Root1, &Root2, &ModeOfAnswer);
+        SolveEquation(Tests[i].a, Tests[i].b, Tests[i].c, &Root1, &Root2, &ModeOfAnswer);
         switch(ModeOfAnswer)
         {
             case NOROOTS:
-                if(Levels[i].ExpRoot1 == 'n')
+                if(Tests[i].ExpRoot1 == 'n')
                 {
                     CompletedTests++;
                     break;
@@ -100,11 +120,11 @@ int test(double a, double b, double c, double Root1, double Root2, int ModeOfAns
                 else
                 {
                     printf("ErrorTest No%d!\n", i+1);
-                    printf("expected: x1 = %lg\nreceived: NoRoots\n \n", Levels[i].ExpRoot1);
+                    printf("expected: x1 = %lg\nreceived: NoRoots\n \n", Tests[i].ExpRoot1);
                     break;
                 }
             case ONEROOT:
-                if(Equal(Levels[i].ExpRoot1, Root1))
+                if(Equal(Tests[i].ExpRoot1, Root1))
                 {
                     CompletedTests++;
                     break;
@@ -112,11 +132,11 @@ int test(double a, double b, double c, double Root1, double Root2, int ModeOfAns
                 else
                 {
                     printf("\nMain: Test: ErrorTest No%d!\n", i+1);
-                    printf("expected: x1 = %lg\nreceived: x1 = %lg, x2 = %lg\n \n", Levels[i].ExpRoot1, Root1);
+                    printf("expected: x1 = %lg\nreceived: x1 = %lg, x2 = %lg\n \n", Tests[i].ExpRoot1, Root1);
                     break;
                 }
             case TWOROOTS:
-                if(Equal(Levels[i].ExpRoot1 , Root1) == 1 && Equal(Levels[i].ExpRoot2, Root2) == 1)
+                if(Equal(Tests[i].ExpRoot1 , Root1) == 1 && Equal(Tests[i].ExpRoot2, Root2) == 1)
                 {
                     CompletedTests++;
                     break;
@@ -125,11 +145,11 @@ int test(double a, double b, double c, double Root1, double Root2, int ModeOfAns
                 {
                     printf("\nMain: Test: ErrorTest No%d\n", i+1);
                     printf("expected: x1 = %lg, x2 = %lg;\nreceived: x1 = %lg, x = %lg\n \n",
-                           Levels[i].ExpRoot1, Levels[i].ExpRoot2, Root1, Root2);
+                           Tests[i].ExpRoot1, Tests[i].ExpRoot2, Root1, Root2);
                     break;
                 }
             case ANYNUMBER:
-                if(Equal(Levels[i].ExpRoot1, Root1))
+                if(Equal(Tests[i].ExpRoot1, Root1))
                 {
                     CompletedTests++;
                     break;
@@ -137,7 +157,7 @@ int test(double a, double b, double c, double Root1, double Root2, int ModeOfAns
                 else
                 {
                     printf("\nMain: Test: ErrorTest No%d!\n", i+1);
-                    printf("expected: %lg\nreceived: %lg, %lg\n \n", Levels[i].ExpRoot1, Root1);
+                    printf("expected: %lg\nreceived: %lg, %lg\n \n", Tests[i].ExpRoot1, Root1);
                     break;
                 }
         }
@@ -157,6 +177,9 @@ int test(double a, double b, double c, double Root1, double Root2, int ModeOfAns
 
 void WritingAnswer(int ModeOfAnswer, double Root1, double Root2)
 {
+    assert(isfinite(Root1));
+    assert(isfinite(Root2));
+
     switch(ModeOfAnswer)
     {
         case ERROR:
