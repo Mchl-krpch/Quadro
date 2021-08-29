@@ -3,7 +3,7 @@
 #include <cassert>
 
 #include "Functions.h"
-
+/// \brief **test** тестирует программу
 int Equal(double number1, double number2)
 {
     return fabs(number1 - number2) < SMALLDIFFERENCE;
@@ -39,6 +39,7 @@ int SolveLinear(double b, double c, double* Root1)
     {
         if(Equal(c, 0))
         {
+            *Root1 = 0;
             return ANYNUMBER;
         }
         *Root1 = -c;
@@ -83,17 +84,9 @@ int SolveSquare(double a, double b, double c, double* Root1, double* Root2)
     return ERROR;
 }
 
-int test(double a, double b, double c, double Root1, double Root2, int ModeOfAnswer)
+int test(int ModeOfAnswer)
 {
-    assert(isfinite(a));
-    assert(isfinite(b));
-    assert(isfinite(c));
-    assert(isfinite(Root1));
-    assert(isfinite(Root2));
-    assert(!isnan(a));
-    assert(!isnan(b));
-    assert(!isnan(c));
-
+    double Root1 = NAN, Root2 = NAN;
     LevelData Tests[] = {
             {0, 0, 0, 0, 0},
             {0, 0, -3, 3, 0},
@@ -132,7 +125,7 @@ int test(double a, double b, double c, double Root1, double Root2, int ModeOfAns
                 else
                 {
                     printf("\nMain: Test: ErrorTest No%d!\n", i+1);
-                    printf("expected: x1 = %lg\nreceived: x1 = %lg, x2 = %lg\n \n", Tests[i].ExpRoot1, Root1);
+                    printf("expected: x1 = %lg\nreceived: x1 = %lg, x2 = %lg\n \n", Tests[i].ExpRoot1, Root1, Root2);
                     break;
                 }
             case TWOROOTS:
@@ -177,8 +170,6 @@ int test(double a, double b, double c, double Root1, double Root2, int ModeOfAns
 
 void WritingAnswer(int ModeOfAnswer, double Root1, double Root2)
 {
-    assert(isfinite(Root1));
-    assert(isfinite(Root2));
 
     switch(ModeOfAnswer)
     {
